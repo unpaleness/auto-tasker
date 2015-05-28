@@ -22,7 +22,7 @@ opt =
   end
 
 require_relative 'generator.rb'
-require_relative 'runner.rb'
+# require_relative 'runner.rb'
 
 generator = AutoTasker::Generator.new(opt['<path_to_executable>'], opt['<path_to_config>'])
-runner = AutoTasker::Runner.new(File.basename(opt['<path_to_executable>']), generator.dirs)
+# runner = AutoTasker::Runner.new(File.basename(opt['<path_to_executable>']), generator.dirs)

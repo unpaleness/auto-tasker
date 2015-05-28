@@ -14,7 +14,9 @@ module AutoTasker
       @executable = path_to_executable
       @config = YAML.load_file(path_to_config)
       @dirs = []
+
       processParam(0, @config['data'], {})
+      runTasks
       # puts "This is binary to run: #{@executable}"
       # puts "This is configuration file:\n#{@config}"
     end
@@ -84,7 +86,7 @@ module AutoTasker
       if stuff.has_key?('and') then
         processParam(depth + 1, stuff['and'], changing_params)
       else
-        @dirs << "tasks/vde-#{@config['name'].gsub(/\s+/, '_')}"
+        @dirs << "#{system(pwd)}/tasks/vde-#{@config['name'].gsub(/\s+/, '_')}"
         changing_params.each do |key, value|
           @dirs.last << "-#{key.gsub('/', '@')}-#{value}"
         end
@@ -111,6 +113,15 @@ module AutoTasker
         File.open("#{directory}/configs/#{key}.yml", "w") do |f|
           YAML.dump(value, f)
         end
+      end
+    end
+
+    # adds tasks to cluster's queue
+    def runTasks
+      # system("ln -sf -T #{File.dirname(@executable)}/../slices_graphics_renderer.rb slices_graphics_renderer")
+      dirs.each do |dir|
+        system("cd dir")
+        system("sh pbs-run.sh #{config['args']}")
       end
     end
   end
