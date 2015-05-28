@@ -21,11 +21,8 @@ opt =
     exit
   end
 
-# binding.pry
-
 require_relative 'generator.rb'
+require_relative 'runner.rb'
 
-AutoTasker::Generator.new(opt['<path_to_executable>'], opt['<path_to_config>'])
-
-# example of executing command with ruby
-# system("#{opt['<path_to_executable>']} -la")
+generator = AutoTasker::Generator.new(opt['<path_to_executable>'], opt['<path_to_config>'])
+runner = AutoTasker::Runner.new(File.basename(opt['<path_to_executable>']), generator.dirs)

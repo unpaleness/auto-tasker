@@ -3,13 +3,9 @@ name: Dimer reactions
 args: 20 20 5 0.01 xyz
 data:
   reactions/DIMER_FORMATION/Ea:
-    range: 0.6..1.8
+    range: 0.6..0.6
     step: 0.4
     type: line
     and:
       reactions/DIMER_DROP/Ea:
-        values: 0.5 0.6 0.7 0.9 1.2 1.5
-  env/concentrations/CH3:
-    range: 1e-7..1e-14
-    step: -1
-    type: log
+        values: 0.5
