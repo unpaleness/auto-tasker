@@ -1,8 +1,13 @@
 ---
 name: Dimer reactions
-args: 5 5 0.01 0.001 xyz
+args: 5 5 0.5 0.01 xyz
 data:
   env/concentrations/H:
     range: 1e-12..1e-8
     step: 1
     type: exp
+    and:
+      env/concentrations/CH3:
+        range: 1e-12..1e-8
+        step: 1
+        type: exp

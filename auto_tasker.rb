@@ -25,12 +25,12 @@ opt =
   end
 
 if(opt['--remove-links'])
-  `find tasks/ -type l | xargs rm -f`
+  puts `find tasks/ -type l | xargs rm -vf`
   exit
 end
 
 if(opt['--remove-tasks'])
-  `rm -rf tasks/*`
+  puts `rm -vrf tasks/*`
   exit
 end
 
