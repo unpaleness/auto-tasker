@@ -98,6 +98,7 @@ module AutoTasker
         `cd #{@dirs.last}; ln -sf -T ../../pbs-run.sh pbs-run.sh`
         `cd #{@dirs.last}; ln -sf -T ../../slices_graphics_renderer.rb slices_graphics_renderer.rb`
         recordParams(@dirs.last, changing_params)
+        puts "task generated: #{@dirs.last}"
       end
     end
 
@@ -124,6 +125,7 @@ module AutoTasker
     def runTasks
       @dirs.each do |dir|
         `cd #{dir}; ./pbs-run.sh #{File.basename(@executable)} #{@config['name']} #{@config['args']}`
+        puts "task queued: #{dir}"
       end
     end
   end
