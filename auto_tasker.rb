@@ -1,16 +1,19 @@
 #!/usr/bin/env ruby
 
-require 'pry'
+# require 'pry'
 require 'docopt'
-# require 'fileutils'
-# require 'pathname'
 
 doc = <<HELP
 Usage:
   #{__FILE__} <path_to_executable> <path_to_config> [options]
+  #{__FILE__} -h | --help
+  #{__FILE__} -r | --remove-links
+  #{__FILE__} -R | --remove-tasks
 
 Options:
-  -h, --help         Show this screen
+  -h, --help             Show this screen
+  -r, --remove-links     Remove all symbolic link that are created for tasks
+  -R, --remove-tasks     Remove all tasks and results
 HELP
 
 opt =
@@ -21,8 +24,16 @@ opt =
     exit
   end
 
+if(opt['--remove-links'])
+  `find tasks/ -type l | xargs rm -f`
+  exit
+end
+
+if(opt['--remove-tasks'])
+  `rm -rf tasks/*`
+  exit
+end
+
 require_relative 'generator.rb'
-# require_relative 'runner.rb'
 
 generator = AutoTasker::Generator.new(opt['<path_to_executable>'], opt['<path_to_config>'])
-# runner = AutoTasker::Runner.new(File.basename(opt['<path_to_executable>']), generator.dirs)

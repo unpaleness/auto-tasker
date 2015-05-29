@@ -11,7 +11,9 @@ module AutoTasker
     # @param [String] path to program to execute
     # @param [String] path to configuration file
     def initialize(path_to_executable, path_to_config)
-      @executable = path_to_executable
+      @executable = `cd #{File.dirname(path_to_executable)}; pwd` + '/' + File.basename(path_to_executable)
+      @executable.delete!("\n")
+      puts @executable
       @config = YAML.load_file(path_to_config)
       @dirs = []
 
@@ -86,13 +88,17 @@ module AutoTasker
       if stuff.has_key?('and') then
         processParam(depth + 1, stuff['and'], changing_params)
       else
-        @dirs << "#{system(pwd)}/tasks/vde-#{@config['name'].gsub(/\s+/, '_')}"
+        @dirs << "tasks/vde-#{@config['name'].gsub(/\s+/, '_')}"
         changing_params.each do |key, value|
           @dirs.last << "-#{key.gsub('/', '@')}-#{value}"
         end
-        system("mkdir -p #{@dirs.last}")
-        system("ln -sf -T #{@executable} #{@dirs.last}/#{File.basename(@executable)}")
-        system("cp -R #{File.dirname(@executable)}/configs #{@dirs.last}")
+        `mkdir -p #{@dirs.last}`
+        `cd #{@dirs.last}; ln -sf -T #{@executable} #{File.basename(@executable)}`
+        `cp -R #{File.dirname(@executable)}/configs #{@dirs.last}`
+        `cd #{@dirs.last}; ln -sf -T ../../local-run.sh local-run.sh`
+        `cd #{@dirs.last}; ln -sf -T ../../pbs-job_creator.rb pbs-job_creator.rb`
+        `cd #{@dirs.last}; ln -sf -T ../../pbs-run.sh pbs-run.sh`
+        `cd #{@dirs.last}; ln -sf -T ../../slices_graphics_renderer.rb slices_graphics_renderer.rb`
         recordParams(@dirs.last, changing_params)
       end
     end
@@ -118,10 +124,8 @@ module AutoTasker
 
     # adds tasks to cluster's queue
     def runTasks
-      # system("ln -sf -T #{File.dirname(@executable)}/../slices_graphics_renderer.rb slices_graphics_renderer")
-      dirs.each do |dir|
-        system("cd dir")
-        system("sh pbs-run.sh #{config['args']}")
+      @dirs.each do |dir|
+        `cd #{dir}; ./pbs-run.sh #{File.basename(@executable)} #{@config['args']}`
       end
     end
   end
