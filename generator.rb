@@ -13,14 +13,12 @@ module AutoTasker
     def initialize(path_to_executable, path_to_config)
       @executable = `cd #{File.dirname(path_to_executable)}; pwd` + '/' + File.basename(path_to_executable)
       @executable.delete!("\n")
-      puts @executable
       @config = YAML.load_file(path_to_config)
+      @config['name'].gsub!(/\s+/, '_')
       @dirs = []
 
       processParam(0, @config['data'], {})
       runTasks
-      # puts "This is binary to run: #{@executable}"
-      # puts "This is configuration file:\n#{@config}"
     end
 
     # processes parameters of current data level to be changed
@@ -125,7 +123,7 @@ module AutoTasker
     # adds tasks to cluster's queue
     def runTasks
       @dirs.each do |dir|
-        `cd #{dir}; ./pbs-run.sh #{File.basename(@executable)} #{@config['args']}`
+        `cd #{dir}; ./pbs-run.sh #{File.basename(@executable)} #{@config['name']} #{@config['args']}`
       end
     end
   end
