@@ -10,14 +10,15 @@ module AutoTasker
     # initializes generating process
     # @param [String] path to program to execute
     # @param [String] path to configuration file
-    def initialize(path_to_executable, path_to_config)
-      @executable = `cd #{File.dirname(path_to_executable)}; pwd` + '/' + File.basename(path_to_executable)
-      @executable.delete!("\n")
-      @config = YAML.load_file(path_to_config)
-      @config['name'].gsub!(/\s+/, '_')
+    def initialize(executable, config)
+      @executable = (`cd #{File.dirname(executable)}; pwd` + '/' + File.basename(executable)).delete!("\n")
+      @config = (`cd #{File.dirname(config)}; pwd` + '/' + File.basename(config)).delete!("\n")
+      @current_dir = (`pwd`).delete!("\n")
       @dirs = []
+      @ranges = YAML.load_file(@config)
+      @ranges['name'].gsub!(/\s+/, '_')
 
-      processParam(0, @config['data'], {})
+      processParam(0, @ranges['data'], {})
       runTasks
     end
 
@@ -86,17 +87,18 @@ module AutoTasker
       if stuff.has_key?('and') then
         processParam(depth + 1, stuff['and'], changing_params)
       else
-        @dirs << "tasks/vde-#{@config['name'].gsub(/\s+/, '_')}"
+        @dirs << "#{@current_dir}/tasks/vde-#{@ranges['name'].gsub(/\s+/, '_')}"
         changing_params.each do |key, value|
           @dirs.last << "-#{key.gsub('/', '@')}-#{value}"
         end
         `mkdir -p #{@dirs.last}`
         `cd #{@dirs.last}; ln -sf -T #{@executable} #{File.basename(@executable)}`
         `cp -R #{File.dirname(@executable)}/configs #{@dirs.last}`
-        `cd #{@dirs.last}; ln -sf -T ../../local-run.sh local-run.sh`
-        `cd #{@dirs.last}; ln -sf -T ../../pbs-job_creator.rb pbs-job_creator.rb`
-        `cd #{@dirs.last}; ln -sf -T ../../pbs-run.sh pbs-run.sh`
-        `cd #{@dirs.last}; ln -sf -T ../../slices_graphics_renderer.rb slices_graphics_renderer.rb`
+        `cp #{@config} #{@dirs.last}`
+        `cd #{@dirs.last}; ln -sf -T ../../scripts/local-run.sh local-run.sh`
+        `cd #{@dirs.last}; ln -sf -T ../../scripts/pbs-job_creator.rb pbs-job_creator.rb`
+        `cd #{@dirs.last}; ln -sf -T ../../scripts/pbs-run.sh pbs-run.sh`
+        `cd #{@dirs.last}; ln -sf -T ../../code/slices_graphics_renderer.rb slices_graphics_renderer.rb`
         recordParams(@dirs.last, changing_params)
         puts "task generated: #{@dirs.last}"
       end
@@ -124,7 +126,7 @@ module AutoTasker
     # adds tasks to cluster's queue
     def runTasks
       @dirs.each do |dir|
-        `cd #{dir}; ./pbs-run.sh #{File.basename(@executable)} #{@config['name']} #{@config['args']}`
+        `cd #{dir}; ./pbs-run.sh #{File.basename(@executable)} #{@ranges['name']} #{@ranges['args']}`
         puts "task queued: #{dir}"
       end
     end
