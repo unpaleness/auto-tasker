@@ -10,7 +10,9 @@ module AutoTasker
     # initializes generating process
     # @param [String] path to program to execute
     # @param [String] path to configuration file
-    def initialize(executable, config)
+    # @param [Boolean] whether this is test run or normal
+    def initialize(executable, config, test)
+      @test = test
       @executable = (`cd #{File.dirname(executable)}; pwd` + '/' + File.basename(executable)).delete!("\n")
       @config = (`cd #{File.dirname(config)}; pwd` + '/' + File.basename(config)).delete!("\n")
       @current_dir = (`pwd`).delete!("\n")
@@ -19,7 +21,7 @@ module AutoTasker
       @ranges['name'].gsub!(/\s+/, '_')
 
       processParam(0, @ranges['data'], {})
-      runTasks
+      runTasks if not @test
     end
 
     # processes parameters of current data level to be changed
@@ -64,7 +66,7 @@ module AutoTasker
           stuff['range'].split('..').each_with_index do |value, i|
             bndrs[i] = value.split('e')
           end
-          if bndrs[0][1] > bndrs[1][1] then
+          if bndrs[0][1].to_i > bndrs[1][1].to_i then
             bndrs[0], bndrs[1] = bndrs[1], bndrs[0]
             stuff['step'] = - stuff['step']
           end
@@ -91,15 +93,17 @@ module AutoTasker
         changing_params.each do |key, value|
           @dirs.last << "-#{key.gsub('/', '@')}-#{value}"
         end
-        `mkdir -p #{@dirs.last}`
-        `cd #{@dirs.last}; ln -sf -T #{@executable} #{File.basename(@executable)}`
-        `cp -R #{File.dirname(@executable)}/configs #{@dirs.last}`
-        `cp #{@config} #{@dirs.last}`
-        `cd #{@dirs.last}; ln -sf -T ../../scripts/local-run.sh local-run.sh`
-        `cd #{@dirs.last}; ln -sf -T ../../scripts/pbs-job_creator.rb pbs-job_creator.rb`
-        `cd #{@dirs.last}; ln -sf -T ../../scripts/pbs-run.sh pbs-run.sh`
-        `cd #{@dirs.last}; ln -sf -T ../../code/slices_graphics_renderer.rb slices_graphics_renderer.rb`
-        recordParams(@dirs.last, changing_params)
+        if not @test then
+          `mkdir -p #{@dirs.last}`
+          `cd #{@dirs.last}; ln -sf -T #{@executable} #{File.basename(@executable)}`
+          `cp -R #{File.dirname(@executable)}/configs #{@dirs.last}`
+          `cp #{@config} #{@dirs.last}`
+          `cd #{@dirs.last}; ln -sf -T ../../scripts/local-run.sh local-run.sh`
+          `cd #{@dirs.last}; ln -sf -T ../../scripts/pbs-job_creator.rb pbs-job_creator.rb`
+          `cd #{@dirs.last}; ln -sf -T ../../scripts/pbs-run.sh pbs-run.sh`
+          `cd #{@dirs.last}; ln -sf -T ../../code/slices_graphics_renderer.rb slices_graphics_renderer.rb`
+          recordParams(@dirs.last, changing_params)
+        end
         puts "task generated: #{@dirs.last}"
       end
     end
