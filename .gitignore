@@ -5,4 +5,5 @@ spec/bowling_spec.rb
 
 .bundle/
 bin/
-tasks/*
+config/
+tasks/
