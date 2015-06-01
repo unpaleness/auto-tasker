@@ -38,3 +38,5 @@ end
 require_relative 'generator.rb'
 
 generator = AutoTasker::Generator.new(opt['<path_to_executable>'], opt['<path_to_config>'], opt['--test'])
+generator.generate
+generator.run

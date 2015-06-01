@@ -1,11 +1,11 @@
 module AutoTasker
 
-  # generates required task parameters and runs them
+  # generates required task parameters and runs the tasks
   class Generator
 
-    attr_reader :dirs
-
     require 'yaml'
+
+    attr_reader :test, :executable, :config, :current_dir, :dirs, :ranges
 
     # initializes generating process
     # @param [String] path to program to execute
@@ -19,37 +19,37 @@ module AutoTasker
       @dirs = []
       @ranges = YAML.load_file(@config)
       @ranges['name'].gsub!(/\s+/, '_')
+    end
 
+    # runs generation proccess
+    def generate
       processParam(0, @ranges['data'], {})
-      runTasks if not @test
     end
 
     # processes parameters of current data level to be changed
-    # @param [Integer] shows iteration depth
     # @param [Hash] hash with params of current level
     # @param [Hash] hash with params, that are changed from upper levels
-    def processParam(depth, params, changing_params)
+    def processParam(params, changing_params)
       params.each do |key, value|
-        makeIter(depth + 1, value, changing_params, key)
+        makeIter(value, changing_params, key)
       end
     end
 
     # processes current parameter's stuff
-    # @param [Integer] shows iteration depth
     # @param [Hash] hash with stuff of current parameter
     # @param [Hash] hash with params, that are changed from upper levels
     # @param [Double] parameter to be varied
-    def makeIter(depth, stuff, changing_params, param_to_change)
+    def makeIter(stuff, changing_params, param_to_change)
       # if syntax provides enumeration
       if stuff.has_key?('values') then
         if stuff['values'].class == String
           stuff['values'].split(' ').each do |value|
             changing_params[param_to_change] = value
-            deepestFork(depth, stuff, changing_params)
+            deepestFork(stuff, changing_params)
           end
         else
           changing_params[param_to_change] = stuff['values']
-          deepestFork(depth, stuff, changing_params)
+          deepestFork(stuff, changing_params)
         end
       # on the other case do enumeration manually
       else
@@ -58,7 +58,7 @@ module AutoTasker
           range = stuff['range'].split('..').inject { |s, e| s.to_f..e.to_f }
           range.step(stuff['step']) do |value|
             changing_params[param_to_change] = value.to_s
-            deepestFork(depth, stuff, changing_params)
+            deepestFork(stuff, changing_params)
           end
         # if range is exponetial
         else
@@ -72,7 +72,7 @@ module AutoTasker
           end
           (bndrs[0][1].to_i..bndrs[1][1].to_i).step(stuff['step']) do |exp|
             changing_params[param_to_change] = bndrs[0][0] + 'e' + exp.to_s
-            deepestFork(depth, stuff, changing_params)
+            deepestFork(stuff, changing_params)
           end
         end
       end
@@ -82,10 +82,9 @@ module AutoTasker
 
     # either sets task with current parameters' values
     # or goes deeper if 'and' presented
-    # @param [Integer] shows iteration depth
     # @param [Hash] hash with stuff of current parameter
     # @param [Hash] hash with params, that are changed from upper levels
-    def deepestFork(depth, stuff, changing_params)
+    def deepestFork(stuff, changing_params)
       if stuff.has_key?('and') then
         processParam(depth + 1, stuff['and'], changing_params)
       else
@@ -128,10 +127,12 @@ module AutoTasker
     end
 
     # adds tasks to cluster's queue
-    def runTasks
-      @dirs.each do |dir|
-        `cd #{dir}; ./pbs-run.sh #{File.basename(@executable)} #{@ranges['name']} #{@ranges['args']}`
-        puts "task queued: #{dir}"
+    def run
+      if not @test then
+        @dirs.each do |dir|
+          `cd #{dir}; ./pbs-run.sh #{File.basename(@executable)} #{@ranges['name']} #{@ranges['args']}`
+          puts "task queued: #{dir}"
+        end
       end
     end
   end

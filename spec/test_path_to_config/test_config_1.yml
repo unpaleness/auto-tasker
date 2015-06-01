@@ -1,0 +1,22 @@
+---
+name: test sequence
+args: some params
+data:
+  test_params/TEST_SECTION_1/A:
+    range: 1..10
+    step: 2
+    type: line
+  test_params/TEST_SECTION_2/B:
+    range: 10..1
+    step: -2
+    type: line
+  test_params/TEST_SECTION_3/C:
+    range: 1e1..1e9
+    step: 2
+    type: exp
+  test_params/TEST_SECTION_4/A:
+    range: 1e9..1e1
+    step: -2
+    type: exp
+  test_params/TEST_SECTION_5/B:
+    values: 1 10 2 9 3 8 4 7 5 6
