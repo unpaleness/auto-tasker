@@ -23,7 +23,7 @@ module AutoTasker
 
     # runs generation proccess
     def generate
-      processParam(0, @ranges['data'], {})
+      processParam(@ranges['data'], {})
     end
 
     # processes parameters of current data level to be changed
