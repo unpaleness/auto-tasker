@@ -100,7 +100,8 @@ module AutoTasker
           `cd #{@dirs.last}; ln -sf -T ../../scripts/local-run.sh local-run.sh`
           `cd #{@dirs.last}; ln -sf -T ../../scripts/pbs-job_creator.rb pbs-job_creator.rb`
           `cd #{@dirs.last}; ln -sf -T ../../scripts/pbs-run.sh pbs-run.sh`
-          `cd #{@dirs.last}; ln -sf -T ../../code/slices_graphics_renderer.rb slices_graphics_renderer.rb`
+          # `cd #{@dirs.last}; ln -sf -T ../../code/slices_graphics_renderer.rb slices_graphics_renderer.rb`
+          `cd #{@dirs.last}; cp ../../code/slices_graphics_renderer.rb .`
           recordParams(@dirs.last, changing_params)
         end
         puts "task generated: #{@dirs.last}"
