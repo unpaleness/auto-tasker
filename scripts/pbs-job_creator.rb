@@ -1,5 +1,4 @@
 def content
-  # puts ARGV.inspect
 <<PBSTASK
 #PBS -l walltime=999:0:0,nodes=1:ppn=1
 #PBS -N vde-#{ARGV[2]}-#{ARGV[3]}x#{ARGV[4]}-#{ARGV[5]}s
