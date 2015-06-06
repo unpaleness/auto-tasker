@@ -1,11 +1,12 @@
 #!/bin/sh
 
 current_dir=${1}
-composit_name=${3}-${4}x${5}-${6}s
+# composit_name=${3}-${4}x${5}-${6}s
+composit_name=$(basename ${current_dir})-${4}x${5}-${6}s
 results_dir=${current_dir}/results/${composit_name}
 
 engine_bin=${current_dir}/${2} # link to executable
-tmp_dir=/tmp/$(basename ${current_dir})-${composit_name} # temporary dir for results
+tmp_dir=/tmp/${composit_name} # temporary dir for results
 
 mkdir -p $results_dir
 cp ${current_dir}/configs/* ${results_dir}/

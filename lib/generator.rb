@@ -86,7 +86,7 @@ module AutoTasker
     # @param [Hash] hash with params, that are changed from upper levels
     def deepestFork(stuff, changing_params)
       if stuff.has_key?('and') then
-        processParam(depth + 1, stuff['and'], changing_params)
+        processParam(stuff['and'], changing_params)
       else
         @dirs << "#{@current_dir}/tasks/vde-#{@ranges['name'].gsub(/\s+/, '_')}"
         changing_params.each do |key, value|
