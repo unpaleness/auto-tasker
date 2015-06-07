@@ -1,0 +1,20 @@
+---
+name: test nesting
+args: 10 10 20 0.1 xyz
+data:
+  p/S1/A:
+    range: 1..10
+    step: 9
+    type: line
+    and:
+      p/S2/B:
+        values: 2 3
+        and:
+          p/S3/C:
+            range: 1e1..1e9
+            step: 8
+            type: exp
+      p/S4/A:
+        range: 1..5
+        step: 4
+        type: line

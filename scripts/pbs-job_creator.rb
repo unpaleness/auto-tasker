@@ -6,7 +6,7 @@ def content
 
 #!/bin/bash
 cd #{ARGV[0]}
-./local-run.sh #{ARGV.join(' ')}
+./cluster-run.sh #{ARGV.join(' ')}
 PBSTASK
 end
 

@@ -5,20 +5,23 @@ module AutoTasker
 
     require 'yaml'
 
-    attr_reader :test, :executable, :config, :current_dir, :dirs, :ranges
+    attr_reader :test, :local, :executable, :config, :current_dir, :dirs, :ranges
 
     # initializes generating process
     # @param [String] path to program to execute
     # @param [String] path to configuration file
     # @param [Boolean] whether this is test run or normal
-    def initialize(executable, config, test)
+    # @param [Boolean] whether run on local machine or on cluster
+    def initialize(executable, config, test, local)
       @test = test
+      @local = local
       @executable = (`cd #{File.dirname(executable)}; pwd` + '/' + File.basename(executable)).delete!("\n")
       @config = (`cd #{File.dirname(config)}; pwd` + '/' + File.basename(config)).delete!("\n")
       @current_dir = (`pwd`).delete!("\n")
       @dirs = []
       @ranges = YAML.load_file(@config)
       @ranges['name'].gsub!(/\s+/, '_')
+      @args = @ranges['args'].split(' ')
     end
 
     # runs generation proccess
@@ -55,22 +58,28 @@ module AutoTasker
       else
         # if range is linear
         if stuff['type'] == 'line' then
-          range = stuff['range'].split('..').inject { |s, e| s.to_f..e.to_f }
-          range.step(stuff['step']) do |value|
+          bndrs = stuff['range'].split('..')
+          step = stuff['step']
+          if step < 0 then
+            bndrs[0], bndrs[1] = bndrs[1], bndrs[0]
+            step = - step
+          end
+          (bndrs[0].to_i..bndrs[1].to_i).step(step) do |value|
             changing_params[param_to_change] = value.to_s
             deepestFork(stuff, changing_params)
           end
         # if range is exponetial
         else
           bndrs = []
+          step = stuff['step']
           stuff['range'].split('..').each_with_index do |value, i|
             bndrs[i] = value.split('e')
           end
-          if bndrs[0][1].to_i > bndrs[1][1].to_i then
+          if step < 0 then
             bndrs[0], bndrs[1] = bndrs[1], bndrs[0]
-            stuff['step'] = - stuff['step']
+            step = - step
           end
-          (bndrs[0][1].to_i..bndrs[1][1].to_i).step(stuff['step']) do |exp|
+          (bndrs[0][1].to_i..bndrs[1][1].to_i).step(step) do |exp|
             changing_params[param_to_change] = bndrs[0][0] + 'e' + exp.to_s
             deepestFork(stuff, changing_params)
           end
@@ -92,19 +101,22 @@ module AutoTasker
         changing_params.each do |key, value|
           @dirs.last << "-#{key.gsub('/', '@')}-#{value}"
         end
+        @dirs.last << "-#{@args[0]}x#{@args[1]}-#{@args[2]}s-#{@args[3]}-#{@args[4]}"
         if not @test then
           `mkdir -p #{@dirs.last}`
           `cd #{@dirs.last}; ln -sf -T #{@executable} #{File.basename(@executable)}`
           `cp -R #{File.dirname(@executable)}/configs #{@dirs.last}`
           `cp #{@config} #{@dirs.last}`
-          `cd #{@dirs.last}; ln -sf -T ../../scripts/local-run.sh local-run.sh`
-          `cd #{@dirs.last}; ln -sf -T ../../scripts/pbs-job_creator.rb pbs-job_creator.rb`
-          `cd #{@dirs.last}; ln -sf -T ../../scripts/pbs-run.sh pbs-run.sh`
-          `cd #{@dirs.last}; ln -sf -T ../../lib/slices_graphics_renderer.rb slices_graphics_renderer.rb`
-          # `cd #{@dirs.last}; cp ../../lib/slices_graphics_renderer.rb .`
+          # `cd #{@dirs.last}; ln -sf -T ../../scripts/local-run.sh local-run.sh`
+          # `cd #{@dirs.last}; ln -sf -T ../../scripts/cluster-run.sh cluster-run.sh`
+          # `cd #{@dirs.last}; ln -sf -T ../../scripts/pbs-job_creator.rb pbs-job_creator.rb`
+          # `cd #{@dirs.last}; ln -sf -T ../../scripts/pbs-run.sh pbs-run.sh`
+          # `cd #{@dirs.last}; ln -sf -T ../../lib/slices_graphics_renderer.rb slices_graphics_renderer.rb`
+          `cd #{@dirs.last}; cp ../../scripts/* .`
+          `cd #{@dirs.last}; cp ../../lib/slices_graphics_renderer.rb .`
           recordParams(@dirs.last, changing_params)
         end
-        puts "task generated: #{@dirs.last}"
+        # puts "task generated: #{@dirs.last}"
       end
     end
 
@@ -131,8 +143,12 @@ module AutoTasker
     def run
       if not @test then
         @dirs.each do |dir|
-          `cd #{dir}; ./pbs-run.sh #{File.basename(@executable)} #{@ranges['name']} #{@ranges['args']}`
-          puts "task queued: #{dir}"
+          if @local
+            `cd #{dir}; ./local-run.sh #{File.basename(@executable)} #{@ranges['name']} #{@ranges['args']}`
+          else
+            `cd #{dir}; ./pbs-run.sh #{File.basename(@executable)} #{@ranges['name']} #{@ranges['args']}`
+            # puts "task queued: #{dir}"
+          end
         end
       end
     end
