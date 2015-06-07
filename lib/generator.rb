@@ -116,7 +116,7 @@ module AutoTasker
           `cd #{@dirs.last}; cp ../../lib/slices_graphics_renderer.rb .`
           recordParams(@dirs.last, changing_params)
         end
-        # puts "task generated: #{@dirs.last}"
+        puts "task generated: #{@dirs.last}"
       end
     end
 
@@ -147,7 +147,7 @@ module AutoTasker
             `cd #{dir}; ./local-run.sh #{File.basename(@executable)} #{@ranges['name']} #{@ranges['args']}`
           else
             `cd #{dir}; ./pbs-run.sh #{File.basename(@executable)} #{@ranges['name']} #{@ranges['args']}`
-            # puts "task queued: #{dir}"
+            puts "task queued: #{dir}"
           end
         end
       end
