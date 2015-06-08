@@ -6,7 +6,7 @@ require 'docopt'
 doc = <<HELP
 Usage:
   #{__FILE__} <path_to_executable> <path_to_config> [-t | --test]
-  #{__FILE__} <path_to_executable> <path_to_config> [-l | --local]
+  #{__FILE__} <path_to_executable> <path_to_config> -l | --local
   #{__FILE__} -h | --help
   #{__FILE__} -r | --remove-links
   #{__FILE__} -R | --remove-tasks

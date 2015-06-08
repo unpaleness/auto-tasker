@@ -100,6 +100,7 @@ module AutoTasker
         @dirs << "#{@current_dir}/tasks/vde-#{@ranges['name'].gsub(/\s+/, '_')}"
         changing_params.each do |key, value|
           @dirs.last << "-#{key.gsub('/', '@')}-#{value}"
+          @dirs.last.downcase!
         end
         @dirs.last << "-#{@args[0]}x#{@args[1]}-#{@args[2]}s-#{@args[3]}-#{@args[4]}"
         if not @test then

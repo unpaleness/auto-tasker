@@ -2,7 +2,7 @@
 
 current_dir=${1}
 # composit_name=${3}-${4}x${5}-${6}s
-composit_name=$(basename ${current_dir})-${4}x${5}-${6}s
+composit_name=$(basename ${current_dir})
 results_dir=${current_dir}/results
 
 engine_bin=${current_dir}/${2} # link to executable
