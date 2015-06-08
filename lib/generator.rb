@@ -101,23 +101,35 @@ module AutoTasker
         changing_params.each do |key, value|
           @dirs.last << "-#{key.gsub('/', '@')}-#{value}"
           @dirs.last.downcase!
+          @dirs.last.sub!('temperature', 'temp')
+          @dirs.last.sub!('surface', 'surf')
+          @dirs.last.sub!('migration', 'mig')
+          @dirs.last.sub!('bridge', 'br')
+          @dirs.last.sub!('dimer', 'dim')
+          @dirs.last.sub!('reaction', 'r')
+          @dirs.last.sub!('from', 'fr')
+          @dirs.last.sub!('down_in', 'di')
         end
         @dirs.last << "-#{@args[0]}x#{@args[1]}-#{@args[2]}s-#{@args[3]}-#{@args[4]}"
-        if not @test then
-          `mkdir -p #{@dirs.last}`
-          `cd #{@dirs.last}; ln -sf -T #{@executable} #{File.basename(@executable)}`
-          `cp -R #{File.dirname(@executable)}/configs #{@dirs.last}`
-          `cp #{@config} #{@dirs.last}`
-          # `cd #{@dirs.last}; ln -sf -T ../../scripts/local-run.sh local-run.sh`
-          # `cd #{@dirs.last}; ln -sf -T ../../scripts/cluster-run.sh cluster-run.sh`
-          # `cd #{@dirs.last}; ln -sf -T ../../scripts/pbs-job_creator.rb pbs-job_creator.rb`
-          # `cd #{@dirs.last}; ln -sf -T ../../scripts/pbs-run.sh pbs-run.sh`
-          # `cd #{@dirs.last}; ln -sf -T ../../lib/slices_graphics_renderer.rb slices_graphics_renderer.rb`
-          `cd #{@dirs.last}; cp ../../scripts/* .`
-          `cd #{@dirs.last}; cp ../../lib/slices_graphics_renderer.rb .`
-          recordParams(@dirs.last, changing_params)
+        if @dirs.last.length < 255 then
+          if not @test then
+            `mkdir -p #{@dirs.last}`
+            `cd #{@dirs.last}; ln -sf -T #{@executable} #{File.basename(@executable)}`
+            `cp -R #{File.dirname(@executable)}/configs #{@dirs.last}`
+            `cp #{@config} #{@dirs.last}`
+            # `cd #{@dirs.last}; ln -sf -T ../../scripts/local-run.sh local-run.sh`
+            # `cd #{@dirs.last}; ln -sf -T ../../scripts/cluster-run.sh cluster-run.sh`
+            # `cd #{@dirs.last}; ln -sf -T ../../scripts/pbs-job_creator.rb pbs-job_creator.rb`
+            # `cd #{@dirs.last}; ln -sf -T ../../scripts/pbs-run.sh pbs-run.sh`
+            # `cd #{@dirs.last}; ln -sf -T ../../lib/slices_graphics_renderer.rb slices_graphics_renderer.rb`
+            `cd #{@dirs.last}; cp ../../scripts/* .`
+            `cd #{@dirs.last}; cp ../../lib/slices_graphics_renderer.rb .`
+            recordParams(@dirs.last, changing_params)
+          end
+          puts "task generated: #{@dirs.last}"
+        else
+          puts "WARNING! directory name is too long! task will not be generated: #{@dirs.last}"
         end
-        puts "task generated: #{@dirs.last}"
       end
     end
 
