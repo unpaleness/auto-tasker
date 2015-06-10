@@ -158,6 +158,7 @@ module AutoTasker
         @dirs.each do |dir|
           if @local
             `cd #{dir}; ./local-run.sh #{File.basename(@executable)} #{@ranges['name']} #{@ranges['args']}`
+            puts "task ran: #{dir}"
           else
             `cd #{dir}; ./pbs-run.sh #{File.basename(@executable)} #{@ranges['name']} #{@ranges['args']}`
             puts "task queued: #{dir}"
