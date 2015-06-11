@@ -39,22 +39,24 @@ module AutoTasker
       let(:config) { "spec/test_path_to_config/test_config_1.yml" }
       let(:dirs) do
         [
-          "#{current_dir}/tasks/vde-test_sequence-p@S1@A-1-10x10-20s-0.1-xyz",
-          "#{current_dir}/tasks/vde-test_sequence-p@S1@A-3-10x10-20s-0.1-xyz",
-          "#{current_dir}/tasks/vde-test_sequence-p@S1@A-5-10x10-20s-0.1-xyz",
-          "#{current_dir}/tasks/vde-test_sequence-p@S1@A-7-10x10-20s-0.1-xyz",
-          "#{current_dir}/tasks/vde-test_sequence-p@S1@A-9-10x10-20s-0.1-xyz",
-          "#{current_dir}/tasks/vde-test_sequence-p@S2@B-1-10x10-20s-0.1-xyz",
-          "#{current_dir}/tasks/vde-test_sequence-p@S2@B-3-10x10-20s-0.1-xyz",
-          "#{current_dir}/tasks/vde-test_sequence-p@S2@B-5-10x10-20s-0.1-xyz",
-          "#{current_dir}/tasks/vde-test_sequence-p@S2@B-7-10x10-20s-0.1-xyz",
-          "#{current_dir}/tasks/vde-test_sequence-p@S2@B-9-10x10-20s-0.1-xyz",
-          "#{current_dir}/tasks/vde-test_sequence-p@S3@C-1e1-10x10-20s-0.1-xyz",
-          "#{current_dir}/tasks/vde-test_sequence-p@S3@C-1e9-10x10-20s-0.1-xyz",
-          "#{current_dir}/tasks/vde-test_sequence-p@S4@A-1e1-10x10-20s-0.1-xyz",
-          "#{current_dir}/tasks/vde-test_sequence-p@S4@A-1e9-10x10-20s-0.1-xyz",
-          "#{current_dir}/tasks/vde-test_sequence-p@S5@B-43-10x10-20s-0.1-xyz",
-          "#{current_dir}/tasks/vde-test_sequence-p@S5@B-98-10x10-20s-0.1-xyz"
+          "#{current_dir}/tasks/vde-test_sequence-p@s1@a-1-10x10-20s-0.1-xyz",
+          "#{current_dir}/tasks/vde-test_sequence-p@s1@a-3-10x10-20s-0.1-xyz",
+          "#{current_dir}/tasks/vde-test_sequence-p@s1@a-5-10x10-20s-0.1-xyz",
+          "#{current_dir}/tasks/vde-test_sequence-p@s1@a-7-10x10-20s-0.1-xyz",
+          "#{current_dir}/tasks/vde-test_sequence-p@s1@a-9-10x10-20s-0.1-xyz",
+          "#{current_dir}/tasks/vde-test_sequence-p@s2@b--2-10x10-20s-0.1-xyz",
+          "#{current_dir}/tasks/vde-test_sequence-p@s2@b-0-10x10-20s-0.1-xyz",
+          "#{current_dir}/tasks/vde-test_sequence-p@s2@b-2-10x10-20s-0.1-xyz",
+          "#{current_dir}/tasks/vde-test_sequence-p@s2@b-4-10x10-20s-0.1-xyz",
+          "#{current_dir}/tasks/vde-test_sequence-p@s2@b-6-10x10-20s-0.1-xyz",
+          "#{current_dir}/tasks/vde-test_sequence-p@s3@c-1e1-10x10-20s-0.1-xyz",
+          "#{current_dir}/tasks/vde-test_sequence-p@s3@c-1e9-10x10-20s-0.1-xyz",
+          "#{current_dir}/tasks/vde-test_sequence-p@s4@a-1e1-10x10-20s-0.1-xyz",
+          "#{current_dir}/tasks/vde-test_sequence-p@s4@a-1e9-10x10-20s-0.1-xyz",
+          "#{current_dir}/tasks/vde-test_sequence-p@s5@b-43-10x10-20s-0.1-xyz",
+          "#{current_dir}/tasks/vde-test_sequence-p@s5@b-98-10x10-20s-0.1-xyz",
+          "#{current_dir}/tasks/vde-test_sequence-p@s6@c--200000.0-10x10-20s-0.1-xyz",
+          "#{current_dir}/tasks/vde-test_sequence-p@s6@c--100000.0-10x10-20s-0.1-xyz"
         ]
       end
       subject { Generator.new(common_exec, config, common_test, common_local) }
@@ -68,18 +70,18 @@ module AutoTasker
       let(:config) { "spec/test_path_to_config/test_config_2.yml" }
       let(:dirs) do
         [
-          "#{current_dir}/tasks/vde-test_nesting-p@S1@A-1-p@S2@B-2-p@S3@C-1e1-10x10-20s-0.1-xyz",
-          "#{current_dir}/tasks/vde-test_nesting-p@S1@A-1-p@S2@B-2-p@S3@C-1e9-10x10-20s-0.1-xyz",
-          "#{current_dir}/tasks/vde-test_nesting-p@S1@A-1-p@S2@B-3-p@S3@C-1e1-10x10-20s-0.1-xyz",
-          "#{current_dir}/tasks/vde-test_nesting-p@S1@A-1-p@S2@B-3-p@S3@C-1e9-10x10-20s-0.1-xyz",
-          "#{current_dir}/tasks/vde-test_nesting-p@S1@A-1-p@S4@A-1-10x10-20s-0.1-xyz",
-          "#{current_dir}/tasks/vde-test_nesting-p@S1@A-1-p@S4@A-5-10x10-20s-0.1-xyz",
-          "#{current_dir}/tasks/vde-test_nesting-p@S1@A-10-p@S2@B-2-p@S3@C-1e1-10x10-20s-0.1-xyz",
-          "#{current_dir}/tasks/vde-test_nesting-p@S1@A-10-p@S2@B-2-p@S3@C-1e9-10x10-20s-0.1-xyz",
-          "#{current_dir}/tasks/vde-test_nesting-p@S1@A-10-p@S2@B-3-p@S3@C-1e1-10x10-20s-0.1-xyz",
-          "#{current_dir}/tasks/vde-test_nesting-p@S1@A-10-p@S2@B-3-p@S3@C-1e9-10x10-20s-0.1-xyz",
-          "#{current_dir}/tasks/vde-test_nesting-p@S1@A-10-p@S4@A-1-10x10-20s-0.1-xyz",
-          "#{current_dir}/tasks/vde-test_nesting-p@S1@A-10-p@S4@A-5-10x10-20s-0.1-xyz"
+          "#{current_dir}/tasks/vde-test_nesting-p@s1@a-1-p@s2@b-2-p@s3@c-1e1-10x10-20s-0.1-xyz",
+          "#{current_dir}/tasks/vde-test_nesting-p@s1@a-1-p@s2@b-2-p@s3@c-1e9-10x10-20s-0.1-xyz",
+          "#{current_dir}/tasks/vde-test_nesting-p@s1@a-1-p@s2@b-3-p@s3@c-1e1-10x10-20s-0.1-xyz",
+          "#{current_dir}/tasks/vde-test_nesting-p@s1@a-1-p@s2@b-3-p@s3@c-1e9-10x10-20s-0.1-xyz",
+          "#{current_dir}/tasks/vde-test_nesting-p@s1@a-1-p@s4@a-1-10x10-20s-0.1-xyz",
+          "#{current_dir}/tasks/vde-test_nesting-p@s1@a-1-p@s4@a-5-10x10-20s-0.1-xyz",
+          "#{current_dir}/tasks/vde-test_nesting-p@s1@a-10-p@s2@b-2-p@s3@c-1e1-10x10-20s-0.1-xyz",
+          "#{current_dir}/tasks/vde-test_nesting-p@s1@a-10-p@s2@b-2-p@s3@c-1e9-10x10-20s-0.1-xyz",
+          "#{current_dir}/tasks/vde-test_nesting-p@s1@a-10-p@s2@b-3-p@s3@c-1e1-10x10-20s-0.1-xyz",
+          "#{current_dir}/tasks/vde-test_nesting-p@s1@a-10-p@s2@b-3-p@s3@c-1e9-10x10-20s-0.1-xyz",
+          "#{current_dir}/tasks/vde-test_nesting-p@s1@a-10-p@s4@a-1-10x10-20s-0.1-xyz",
+          "#{current_dir}/tasks/vde-test_nesting-p@s1@a-10-p@s4@a-5-10x10-20s-0.1-xyz"
         ]
       end
       subject { Generator.new(common_exec, config, common_test, common_local) }

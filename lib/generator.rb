@@ -3,6 +3,7 @@ module AutoTasker
   # generates required task parameters and runs the tasks
   class Generator
 
+    require 'pry'
     require 'yaml'
 
     attr_reader :test, :local, :executable, :config, :current_dir, :dirs, :ranges
@@ -47,11 +48,11 @@ module AutoTasker
       if stuff.has_key?('values') then
         if stuff['values'].class == String
           stuff['values'].split(' ').each do |value|
-            changing_params[param_to_change] = value
+            changing_params[param_to_change] = value.to_s
             deepestFork(stuff, changing_params)
           end
         else
-          changing_params[param_to_change] = stuff['values']
+          changing_params[param_to_change] = stuff['values'].to_s
           deepestFork(stuff, changing_params)
         end
       # on the other case do enumeration manually
@@ -59,12 +60,14 @@ module AutoTasker
         # if range is linear
         if stuff['type'] == 'line' then
           bndrs = stuff['range'].split('..')
-          step = stuff['step']
-          if step < 0 then
+          bndrs[0].to_s.match(/\.|e/) ? bndrs[0] = bndrs[0].to_f : bndrs[0] = bndrs[0].to_i
+          bndrs[1].to_s.match(/\.|e/) ? bndrs[1] = bndrs[1].to_f : bndrs[1] = bndrs[1].to_i
+          stuff['step'].to_s.match(/\.|e/) ? step = stuff['step'].to_f : step = stuff['step'].to_i
+          if step.to_f < 0 then
             bndrs[0], bndrs[1] = bndrs[1], bndrs[0]
             step = - step
           end
-          (bndrs[0].to_i..bndrs[1].to_i).step(step) do |value|
+          (bndrs[0]..bndrs[1]).step(step) do |value|
             changing_params[param_to_change] = value.to_s
             deepestFork(stuff, changing_params)
           end
@@ -79,7 +82,7 @@ module AutoTasker
             bndrs[0], bndrs[1] = bndrs[1], bndrs[0]
             step = - step
           end
-          (bndrs[0][1].to_i..bndrs[1][1].to_i).step(step) do |exp|
+          (bndrs[0][1]..bndrs[1][1]).step(step) do |exp|
             changing_params[param_to_change] = bndrs[0][0] + 'e' + exp.to_s
             deepestFork(stuff, changing_params)
           end
@@ -158,7 +161,7 @@ module AutoTasker
         @dirs.each do |dir|
           if @local
             `cd #{dir}; ./local-run.sh #{File.basename(@executable)} #{@ranges['name']} #{@ranges['args']}`
-            puts "task ran: #{dir}"
+            puts "task run: #{dir}"
           else
             `cd #{dir}; ./pbs-run.sh #{File.basename(@executable)} #{@ranges['name']} #{@ranges['args']}`
             puts "task queued: #{dir}"
