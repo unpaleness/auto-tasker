@@ -3,7 +3,7 @@ module AutoTasker
   # generates required task parameters and runs the tasks
   class Generator
 
-    require 'pry'
+    # require 'pry'
     require 'yaml'
 
     attr_reader :test, :local, :executable, :config, :current_dir, :dirs, :ranges
