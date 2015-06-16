@@ -3,7 +3,6 @@ module AutoTasker
   # generates required task parameters and runs the tasks
   class Generator
 
-    # require 'pry'
     require 'yaml'
 
     attr_reader :test, :local, :executable, :config, :current_dir, :dirs, :ranges
@@ -120,11 +119,6 @@ module AutoTasker
             `cd #{@dirs.last}; ln -sf -T #{@executable} #{File.basename(@executable)}`
             `cp -R #{File.dirname(@executable)}/configs #{@dirs.last}`
             `cp #{@config} #{@dirs.last}`
-            # `cd #{@dirs.last}; ln -sf -T ../../scripts/local-run.sh local-run.sh`
-            # `cd #{@dirs.last}; ln -sf -T ../../scripts/cluster-run.sh cluster-run.sh`
-            # `cd #{@dirs.last}; ln -sf -T ../../scripts/pbs-job_creator.rb pbs-job_creator.rb`
-            # `cd #{@dirs.last}; ln -sf -T ../../scripts/pbs-run.sh pbs-run.sh`
-            # `cd #{@dirs.last}; ln -sf -T ../../lib/slices_graphics_renderer.rb slices_graphics_renderer.rb`
             `cd #{@dirs.last}; cp ../../scripts/* .`
             `cd #{@dirs.last}; cp ../../lib/slices_graphics_renderer.rb .`
             recordParams(@dirs.last, changing_params)

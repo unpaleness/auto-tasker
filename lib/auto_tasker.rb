@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 
-# require 'pry'
 require 'docopt'
 
 doc = <<HELP
